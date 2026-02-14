@@ -2,9 +2,10 @@ from flask import Flask, request, send_file
 import cv2
 import numpy as np
 from core.pipeline import PreprocessingPipeline
+from core.config import ProcessingConfig
 
 app = Flask(__name__)
-pipeline = PreprocessingPipeline()
+pipeline = PreprocessingPipeline(ProcessingConfig())
 
 @app.route("/process", methods=["POST"])
 def process():
@@ -14,8 +15,8 @@ def process():
         cv2.IMREAD_COLOR,
     )
 
-    out = pipeline.run(img)
-    cv2.imwrite("out.png", out * 255)
+    binary, _ = pipeline.run(img)
+    cv2.imwrite("out.png", binary)
     return send_file("out.png", mimetype="image/png")
 
 if __name__ == "__main__":
