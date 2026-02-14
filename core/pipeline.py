@@ -1,42 +1,54 @@
 import cv2
 import numpy as np
-from core.roi import crop_roi
-from core.config import ProcessingConfig
 
-class PreprocessingPipeline:
-    def __init__(self, config: ProcessingConfig):
+class AdvancedCVPipeline:
+    def __init__(self, config):
         self.config = config
 
-    def run(self, image, roi_coords=None):
-        if image is None:
+    def preprocess(self, img):
+        if img is None:
             raise ValueError("Input image is None")
 
-        image_to_process = crop_roi(image, roi_coords)
+        # ROI
+        if self.config.roi_coords:
+            x1, y1, x2, y2 = self.config.roi_coords
+            img = img[y1:y2, x1:x2]
 
-        gray = cv2.cvtColor(image_to_process, cv2.COLOR_BGR2GRAY)
+        # Convert to grayscale
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        clahe = cv2.createCLAHE(
-            clipLimit=self.config.clip_limit,
-            tileGridSize=(8, 8),
-        )
-        clahe_img = clahe.apply(gray)
+        # CLAHE
+        if self.config.apply_clahe:
+            clahe = cv2.createCLAHE(self.config.clip_limit, (8, 8))
+            gray = clahe.apply(gray)
 
-        denoised = cv2.fastNlMeansDenoising(
-            clahe_img,
-            None,
-            h=self.config.denoise_strength,
-            templateWindowSize=7,
-            searchWindowSize=21,
-        )
+        # Denoise
+        if self.config.apply_denoise:
+            gray = cv2.fastNlMeansDenoising(gray, None, self.config.denoise_strength, 7, 21)
 
-        binary = cv2.adaptiveThreshold(
-            denoised,
-            255,
-            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-            cv2.THRESH_BINARY_INV,
-            self.config.block_size,
-            self.config.c,
-        )
+        # Gaussian blur
+        if self.config.apply_gaussian and self.config.gaussian_sigma > 0:
+            k = int(self.config.gaussian_sigma * 3) | 1
+            gray = cv2.GaussianBlur(gray, (k, k), self.config.gaussian_sigma)
 
-        normalized = binary.astype(np.float32) / 255.0
-        return binary, normalized
+        # Contrast / Brightness
+        gray = cv2.convertScaleAbs(gray, alpha=self.config.contrast, beta=self.config.brightness)
+
+        # Gamma correction
+        if abs(self.config.gamma - 1.0) > 0.01:
+            inv_gamma = 1.0 / self.config.gamma
+            table = np.array([((i / 255.0) ** inv_gamma) * 255 for i in range(256)]).astype(np.uint8)
+            gray = cv2.LUT(gray, table)
+
+        # Threshold
+        if self.config.apply_threshold:
+            gray = cv2.adaptiveThreshold(
+                gray,
+                255,
+                cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                cv2.THRESH_BINARY_INV,
+                self.config.block_size,
+                self.config.c,
+            )
+
+        #
