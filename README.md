@@ -1,6 +1,5 @@
 # CV Preprocessing Studio
-<img width="1920" height="1020" alt="python_HYqxTMDWwk" src="https://github.com/user-attachments/assets/7a37f63b-9200-4327-969c-0c6c70e1553a" />
-
+<img width="1920" height="991" alt="python_HczHHhamXK" src="https://github.com/user-attachments/assets/3fbd2bf2-c761-426d-9c71-85b9148fb411" />
 
 A universal image preprocessing tool for computer vision beginners.
 
@@ -21,5 +20,6 @@ A universal image preprocessing tool for computer vision beginners.
 ## Install
 ```bash
 pip install -r requirements.txt
+
 
 
