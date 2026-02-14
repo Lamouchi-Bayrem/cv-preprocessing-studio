@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import QApplication
 import sys
+from PyQt6.QtWidgets import QApplication
 from gui.qt_app import CVStudio
 
 def main():
@@ -10,4 +10,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
