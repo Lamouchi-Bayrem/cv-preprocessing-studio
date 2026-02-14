@@ -1,30 +1,32 @@
 import cv2
 import numpy as np
+from core.roi import crop_roi
+from core.config import ProcessingConfig
 
 class PreprocessingPipeline:
-    def __init__(
-        self,
-        clip_limit=2.0,
-        denoise_strength=10,
-        block_size=11,
-        c=2,
-    ):
-        self.clip_limit = clip_limit
-        self.denoise_strength = denoise_strength
-        self.block_size = block_size | 1
-        self.c = c
+    def __init__(self, config: ProcessingConfig):
+        self.config = config
 
-    def run(self, image: np.ndarray) -> np.ndarray:
+    def run(self, image, roi_coords=None):
         if image is None:
             raise ValueError("Input image is None")
 
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image_to_process = crop_roi(image, roi_coords)
 
-        clahe = cv2.createCLAHE(self.clip_limit, (8, 8))
-        enhanced = clahe.apply(gray)
+        gray = cv2.cvtColor(image_to_process, cv2.COLOR_BGR2GRAY)
+
+        clahe = cv2.createCLAHE(
+            clipLimit=self.config.clip_limit,
+            tileGridSize=(8, 8),
+        )
+        clahe_img = clahe.apply(gray)
 
         denoised = cv2.fastNlMeansDenoising(
-            enhanced, None, self.denoise_strength, 7, 21
+            clahe_img,
+            None,
+            h=self.config.denoise_strength,
+            templateWindowSize=7,
+            searchWindowSize=21,
         )
 
         binary = cv2.adaptiveThreshold(
@@ -32,8 +34,9 @@ class PreprocessingPipeline:
             255,
             cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
             cv2.THRESH_BINARY_INV,
-            self.block_size,
-            self.c,
+            self.config.block_size,
+            self.config.c,
         )
 
-        return binary.astype(np.float32) / 255.0
+        normalized = binary.astype(np.float32) / 255.0
+        return binary, normalized
