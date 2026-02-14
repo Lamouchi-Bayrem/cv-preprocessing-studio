@@ -1,23 +1,31 @@
 from flask import Flask, request, send_file
 import cv2
 import numpy as np
-from core.pipeline import PreprocessingPipeline
-from core.config import ProcessingConfig
+import json
+from core.pipeline import AdvancedCVPipeline
 
 app = Flask(__name__)
-pipeline = PreprocessingPipeline(ProcessingConfig())
+
 
 @app.route("/process", methods=["POST"])
 def process():
+
     file = request.files["image"]
+    params = request.form.get("params")
+
     img = cv2.imdecode(
         np.frombuffer(file.read(), np.uint8),
         cv2.IMREAD_COLOR,
     )
 
-    binary, _ = pipeline.run(img)
-    cv2.imwrite("out.png", binary)
-    return send_file("out.png", mimetype="image/png")
+    config = json.loads(params)
+    pipeline = AdvancedCVPipeline(config)
+
+    normalized, output = pipeline.preprocess(img)
+
+    cv2.imwrite("output.png", output)
+    return send_file("output.png", mimetype="image/png")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
