@@ -3,4 +3,3 @@ numpy
 Pillow
 PyQt6
 flask
-
