@@ -1,5 +1,6 @@
-opencv-python
+opencv-python-headless
 numpy
 Pillow
 PyQt6
-flask
+gradio
+tqdm
