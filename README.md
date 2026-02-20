@@ -36,13 +36,7 @@ for creating clean, high-quality datasets — especially useful for document pro
 - **Pipeline presets** — save/load your favorite settings (JSON)
 - **Gradio-based web interface** (alternative lightweight frontend)
 
-## Screenshots
 
-*(Add 3–5 real screenshots here later)*
-
-| GUI Main View              | Augmentation Tab           | Batch Processing           |
-|----------------------------|----------------------------|----------------------------|
-| ![gui](screenshots/gui.png) | ![aug](screenshots/aug.png) | ![batch](screenshots/batch.png) |
 
 ## Installation
 
