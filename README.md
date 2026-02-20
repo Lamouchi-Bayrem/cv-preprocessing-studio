@@ -5,7 +5,7 @@
 for creating clean, high-quality datasets — especially useful for document processing, OCR, medical imaging, industrial inspection, and general CV model training.
 
 <p align="center">
-  <img src="https://via.placeholder.com/800x450/1e1e1e/00bfff?text=CV+Studio+Screenshot" alt="CV Preprocessing Studio Interface" width="800"/>
+  
   <br/>
   <em>Modern dark-themed GUI with real-time before/after comparison</em>
 </p>
