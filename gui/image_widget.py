@@ -2,8 +2,6 @@ from PyQt6.QtWidgets import QLabel
 from PyQt6.QtCore import Qt, QRect
 from PyQt6.QtGui import QPainter, QPen
 
-
-
 class ImageWidget(QLabel):
     def __init__(self):
         super().__init__()
