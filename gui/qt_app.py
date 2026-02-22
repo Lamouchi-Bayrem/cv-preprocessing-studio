@@ -12,6 +12,7 @@ from PyQt6.QtWidgets import (
     QFileDialog, QMessageBox, QSplitter, QStatusBar, QGroupBox, QListWidget,
     QGridLayout, QSizePolicy, QScrollArea
 )
+
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt6.QtGui import QPixmap, QImage, QAction, QIcon
 
